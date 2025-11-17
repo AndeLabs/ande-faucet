@@ -1,0 +1,24 @@
+{
+  "name": "ande-faucet",
+  "version": "1.0.0",
+  "description": "ANDE Chain Faucet - Professional token distribution service",
+  "main": "backend/dist/index.js",
+  "scripts": {
+    "dev": "cd backend && npm run dev",
+    "build": "cd backend && npm install && npm run build",
+    "start": "cd backend && npm start",
+    "vercel-build": "cd backend && npm install && npm run build"
+  },
+  "keywords": [
+    "ande",
+    "blockchain",
+    "faucet",
+    "ethereum",
+    "web3"
+  ],
+  "author": "ANDE Labs",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
