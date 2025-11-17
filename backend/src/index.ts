@@ -58,6 +58,9 @@ app.get('/health', (_req: Request, res: Response) => {
 app.use('/api/faucet', faucetRoutes);
 app.use('/api/admin', adminRoutes);
 
+// Alias for backward compatibility (HTML calls /api/faucet directly)
+app.use('/faucet', faucetRoutes);
+
 // Root endpoint
 app.get('/', (_req: Request, res: Response) => {
   res.json({

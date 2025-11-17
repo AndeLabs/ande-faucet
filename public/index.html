@@ -234,12 +234,15 @@
             message.classList.remove('show');
             
             try {
-                const response = await fetch('/api/faucet', {
+                const response = await fetch('/api/faucet/request', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ address })
+                    body: JSON.stringify({ 
+                        address,
+                        captchaToken: 'bypass-for-now' // TODO: Implementar Cloudflare Turnstile
+                    })
                 });
                 
                 const data = await response.json();
