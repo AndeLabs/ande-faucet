@@ -1,17 +1,15 @@
 import { Router, Request, Response } from 'express';
-import { FaucetService } from '../services/faucet.service';
-import { rateLimitMiddleware } from '../middleware/rateLimit.middleware';
-import { logger } from '../utils/logger';
+import { faucetService } from '../services/faucet.service';
+import logger from '../utils/logger';
 import { isAddress } from 'ethers';
 
 const router = Router();
-const faucetService = new FaucetService();
 
 /**
  * POST /api/faucet/request
  * Request tokens from the faucet
  */
-router.post('/request', rateLimitMiddleware, async (req: Request, res: Response) => {
+router.post('/request', async (req: Request, res: Response) => {
   const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   
   try {
@@ -101,7 +99,7 @@ router.post('/request', rateLimitMiddleware, async (req: Request, res: Response)
  * GET /api/faucet/info
  * Get faucet information
  */
-router.get('/info', async (req: Request, res: Response) => {
+router.get('/info', async (_req: Request, res: Response) => {
   try {
     const info = await faucetService.getFaucetInfo();
     
@@ -126,7 +124,7 @@ router.get('/info', async (req: Request, res: Response) => {
  * GET /api/faucet/stats
  * Get faucet statistics
  */
-router.get('/stats', async (req: Request, res: Response) => {
+router.get('/stats', async (_req: Request, res: Response) => {
   try {
     const stats = await faucetService.getStats();
     
@@ -185,7 +183,7 @@ router.get('/cooldown/:address', async (req: Request, res: Response) => {
  * GET /api/faucet/health
  * Health check endpoint
  */
-router.get('/health', async (req: Request, res: Response) => {
+router.get('/health', async (_req: Request, res: Response) => {
   try {
     const health = await faucetService.healthCheck();
     

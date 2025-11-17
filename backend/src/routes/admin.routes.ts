@@ -1,14 +1,11 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { FaucetService } from '../services/faucet.service';
-import { BlockchainService } from '../services/blockchain.service';
-import { RedisService } from '../services/redis.service';
-import { logger } from '../utils/logger';
+import { faucetService } from '../services/faucet.service';
+import { blockchainService } from '../services/blockchain.service';
+import { redisService } from '../services/redis.service';
+import logger from '../utils/logger';
 import { config } from '../config';
 
 const router = Router();
-const faucetService = new FaucetService();
-const blockchainService = new BlockchainService();
-const redisService = new RedisService();
 
 /**
  * Admin authentication middleware
@@ -45,7 +42,7 @@ const adminAuth = (req: Request, res: Response, next: NextFunction) => {
     });
   }
 
-  next();
+  return next();
 };
 
 // Apply admin auth to all admin routes
@@ -55,7 +52,7 @@ router.use(adminAuth);
  * GET /api/admin/dashboard
  * Get comprehensive dashboard data
  */
-router.get('/dashboard', async (req: Request, res: Response) => {
+router.get('/dashboard', async (_req: Request, res: Response) => {
   try {
     const [stats, info, health] = await Promise.all([
       faucetService.getStats(),
@@ -89,7 +86,7 @@ router.get('/dashboard', async (req: Request, res: Response) => {
  * GET /api/admin/balance
  * Get detailed faucet wallet balance
  */
-router.get('/balance', async (req: Request, res: Response) => {
+router.get('/balance', async (_req: Request, res: Response) => {
   try {
     const balance = await blockchainService.getBalance();
     const address = await blockchainService.getAddress();
@@ -201,7 +198,7 @@ router.post('/reset-rate-limit', async (req: Request, res: Response) => {
  * GET /api/admin/config
  * Get current faucet configuration
  */
-router.get('/config', async (req: Request, res: Response) => {
+router.get('/config', async (_req: Request, res: Response) => {
   try {
     return res.json({
       success: true,
@@ -212,7 +209,7 @@ router.get('/config', async (req: Request, res: Response) => {
         },
         faucet: {
           amount: config.faucet.amount,
-          cooldownHours: config.faucet.cooldownHours,
+          cooldownHours: config.rateLimit.cooldownHours,
           gasLimit: config.faucet.gasLimit,
         },
         rateLimit: config.rateLimit,
@@ -290,7 +287,7 @@ router.post('/manual-send', async (req: Request, res: Response) => {
  * GET /api/admin/metrics
  * Get Prometheus-compatible metrics
  */
-router.get('/metrics', async (req: Request, res: Response) => {
+router.get('/metrics', async (_req: Request, res: Response) => {
   try {
     const stats = await faucetService.getStats();
     const balance = await blockchainService.getBalance();
@@ -312,7 +309,7 @@ faucet_requests_failed ${stats.failedRequests}
 
 # HELP faucet_tokens_distributed Total tokens distributed
 # TYPE faucet_tokens_distributed counter
-faucet_tokens_distributed ${stats.totalTokensDistributed}
+faucet_tokens_distributed ${stats.totalDistributed}
 
 # HELP faucet_balance Current faucet balance
 # TYPE faucet_balance gauge
@@ -324,7 +321,7 @@ faucet_health ${health.healthy ? 1 : 0}
 
 # HELP faucet_uptime Faucet uptime in seconds
 # TYPE faucet_uptime counter
-faucet_uptime ${stats.uptime || 0}
+faucet_uptime ${process.uptime()}
     `.trim();
 
     res.setHeader('Content-Type', 'text/plain; version=0.0.4');

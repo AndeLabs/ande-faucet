@@ -1,9 +1,8 @@
-import { v4 as uuidv4 } from 'uuid';
 import blockchainService from './blockchain.service';
 import redisService from './redis.service';
 import captchaService from './captcha.service';
 import config from '../config';
-import logger, { logFaucetRequest } from '../utils/logger';
+import logger from '../utils/logger';
 
 export interface FaucetRequest {
   address: string;
@@ -33,7 +32,6 @@ export interface FaucetStats {
  * Main service that coordinates token distribution
  */
 class FaucetService {
-  private readonly CACHE_KEY_PREFIX = 'faucet:';
   private readonly IP_KEY_PREFIX = 'ip:';
   private readonly ADDRESS_KEY_PREFIX = 'address:';
   private readonly STATS_KEY = 'stats';
@@ -207,7 +205,7 @@ class FaucetService {
       faucetAddress: address,
       faucetBalance: balance,
       amount: config.faucet.amount.toString(),
-      cooldownHours: config.faucet.cooldownHours,
+      cooldownHours: config.rateLimit.cooldownHours,
     };
   }
 
@@ -365,13 +363,7 @@ class FaucetService {
     }
   }
 
-  private createErrorResponse(message: string, requestId: string): FaucetResponse {
-    return {
-      success: false,
-      message,
-      requestId,
-    };
-  }
+  // Helper method removed - not used
 }
 
 // Export singleton instance

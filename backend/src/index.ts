@@ -3,7 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
 import { config } from './config';
-import { logger } from './utils/logger';
+import logger from './utils/logger';
 import faucetRoutes from './routes/faucet.routes';
 import adminRoutes from './routes/admin.routes';
 
@@ -45,7 +45,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 // Health check endpoint (no auth required)
-app.get('/health', (req: Request, res: Response) => {
+app.get('/health', (_req: Request, res: Response) => {
   res.json({
     success: true,
     status: 'healthy',
@@ -59,7 +59,7 @@ app.use('/api/faucet', faucetRoutes);
 app.use('/api/admin', adminRoutes);
 
 // Root endpoint
-app.get('/', (req: Request, res: Response) => {
+app.get('/', (_req: Request, res: Response) => {
   res.json({
     success: true,
     name: 'ANDE Faucet API',
@@ -73,7 +73,7 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 // 404 handler
-app.use((req: Request, res: Response) => {
+app.use((_req: Request, res: Response) => {
   res.status(404).json({
     success: false,
     error: 'Endpoint not found',
@@ -81,7 +81,7 @@ app.use((req: Request, res: Response) => {
 });
 
 // Global error handler
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+app.use((err: Error, req: Request, res: Response, _next: NextFunction) => {
   logger.error('Unhandled error', {
     error: err.message,
     stack: err.stack,
